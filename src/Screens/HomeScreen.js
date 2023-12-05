@@ -4,31 +4,25 @@ import { Dimensions, PixelRatio } from "react-native";
 import { StyleSheet } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Search from './Search';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+
 import { NavigationContainer } from '@react-navigation/native';
 
 
 
+
+
+
+
 const { width, height } = Dimensions.get("window");
-// const { width } = Dimensions.get('window');
+
+
+
 const HomeScreen = ({ navigation }) => {
 
-    const openDrawer = () => {
-        navigation.dispatch(DrawerActions.openDrawer());
-    };
 
-    function App({ navigation }) {
-        return (
-            <NavigationContainer>
-                <Drawer.Navigator initialRouteName="Home">
-                    <Drawer.Screen name="Home" component={HomeScreen} />
-
-                </Drawer.Navigator>
-            </NavigationContainer>
-        );
-    }
     return (
         <View style={{ flex: 1 }} >
+
             <View>
                 <Image style={{
                     width: '100%',
@@ -41,10 +35,13 @@ const HomeScreen = ({ navigation }) => {
             </View>
 
             <View style={{ flexDirection: 'row', position: 'absolute', marginTop: 30, marginLeft: 20 }}>
-                <TouchableOpacity onPress={openDrawer}>
+                <TouchableOpacity onPress={() => navigation.navigate('Daily')}>
                     <Image style={{ height: 25, width: 20, }} source={require('../assets/openWeatherIcons/menu.png')} />
                 </TouchableOpacity>
-                <Image style={{ height: 20, width: 20, marginLeft: 30 }} source={require('../assets/openWeatherIcons/reload.png')} />
+                <TouchableOpacity onPress={() => navigation.navigate('Today')}>
+
+                    <Image style={{ height: 20, width: 20, marginLeft: 30 }} source={require('../assets/openWeatherIcons/reload.png')} />
+                </TouchableOpacity>
             </View>
             <View style={{ flexDirection: 'row', position: 'absolute', marginTop: 30, marginLeft: '80%' }}>
                 <Image style={{ height: 20, width: 20, }} source={require('../assets/openWeatherIcons/star.png')} />
