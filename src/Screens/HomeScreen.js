@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, TouchableOpacity, ImageBackground, StatusBar } from 'react-native'
+import { View, Text, ScrollView, Image, TouchableOpacity, ImageBackground, StatusBar, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet } from 'react-native';
 import { DrawerActions } from '@react-navigation/native';
@@ -7,67 +7,82 @@ import moment from 'moment-timezone';
 
 const HomeScreen = ({ navigation }) => {
     const [formattedDate, setFormattedDate] = useState('');
-
-
-
-    useEffect(() => {
-        APIFn();
-        // APINEW();
-    }, []);
-
+    const [loading, setloading] = useState(true);
+    const [formattemp, setFormattedTemperature] = useState('')
     const [city, setcity] = useState('');
     const [data, setdata] = useState('');
-    const [datanew, setdatanew] = useState('');
-
+    const [datahour, setdatahour] = useState('');
     const [loca, setlocation] = useState('');
 
     const APIFn = () => {
-        const api = 'https://api.openweathermap.org/data/2.5/weather?lat=9.928818&lon=78.167385&appid=3a9bee9c35ea0fc21779ccf795b8f5e6'
+        const api = 'https://api.openweathermap.org/data/2.5/weather?lat=9.928818&lon=78.167385&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric'
 
 
-        // const api = 'https://pro.openweathermap.org/data/2.5/forecast/climate?lat=35&lon=139&appid=f19d262769dd03d6a30e3c2960d16ae8'
+        const apihour = 'https://pro.openweathermap.org/data/2.5/forecast/climate?lat=35&lon=139&appid=f19d262769dd03d6a30e3c2960d16ae8'
 
-        // setcity(data.city)
-        // console.log("newwwwwwww", city)
 
+        setloading(true);
         fetch(api)
             .then((resp) => resp.json())
-            .then((json) => setdata(json))
-            .catch((error) => console.error(error))
+            .then((json) => { setdata(json); setloading(false); setFormattedTemperature(json.main.temp.toFixed(1)); })
+            .catch((error) => { console.error(error); setloading(false) })
 
-
-        console.log("datahhhh", data.wind)
-        // setcity(data.city)
+        console.log("datahhhh", data)
         console.log("cityyyyyy", city)
 
     }
 
+    const APIHour = () => {
+        // const api = 'https://api.openweathermap.org/data/2.5/weather?lat=9.928818&lon=78.167385&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric'
+
+
+        const apihour = 'https://pro.openweathermap.org/data/2.5/forecast/climate?lat=35&lon=139&appid=f19d262769dd03d6a30e3c2960d16ae8'
+
+
+        setloading(true);
+        fetch(apihour)
+            .then((resp) => resp.json())
+            .then((json) => { setdatahour(json); setloading(false); })
+            .catch((error) => { console.error(error); setloading(false) })
+
+        console.log("hourly", datahour)
+        // console.log("cityyyyyy", city)
+
+    }
+
+
+    useEffect(() => {
+
+        APIFn();
+        // APIHour();
+        // APINEW();
+    }, []);
+
+    // useEffect(() => {
+
+    //     // APIFn();
+    //     APIHour();
+    //     // APINEW();
+    // }, []);
 
 
 
-    // const APINEW = () => {
 
-    //     const apinew = 'https://api.openweathermap.org/data/2.5/forecast?lat=9.925201&lon=78.119774&appid=3a9bee9c35ea0fc21779ccf795b8f5e6'
-    //     fetch(apinew)
-    //         .then((resp) => resp.json())
-    //         .then((json) => console.log(json))
-    //         .catch((error) => console.error(error))
-    //     console.log("new ", datanew)
 
-    // }
+
 
     useEffect(() => {
 
         const timezoneOffset = data.timezone;
         const utcTime = moment.utc();
-
         const localTime = utcTime.utcOffset(timezoneOffset / 60);
         const formatted = localTime.format('MMMM Do YYYY, h:mm:ss a');
         setFormattedDate(formatted);
+        console.log("timedate ", formatted)
 
     }, []);
 
-    //LOCATION
+
     const location = () => {
         GetLocation.getCurrentPosition({
             enableHighAccuracy: true,
@@ -81,10 +96,21 @@ const HomeScreen = ({ navigation }) => {
                 const { code, message } = error;
                 console.warn("ggggggggggg", code, message);
             })
+
     }
     useEffect(() => {
         location();
     }, []);
+
+
+    // const Temperature = () => {
+
+    //     const formattedTemperature = temperature.toFixed(1);
+    //     console.log("garrrr", formattedTemperature)
+    // }
+    // useEffect(() => {
+    //     Temperature();
+    // }, []);
 
 
     const openDrawer = () => {
@@ -92,9 +118,20 @@ const HomeScreen = ({ navigation }) => {
     };
 
 
+    if (loading) {
+
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#FCA351" />
+                <Text>Loading...</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={{ flex: 1 }}>
             <StatusBar backgroundColor="#FCA351" barStyle="light-content" />
+
             <ImageBackground style={STYLES.background} source={require('../assets/BGImages/1.jpg')} resizeMode='stretch'>
 
                 <ScrollView>
@@ -125,7 +162,7 @@ const HomeScreen = ({ navigation }) => {
                     <Text style={STYLES.daytime}>{formattedDate}</Text>
 
                     <View style={{ flexDirection: 'row', alignSelf: 'center', marginTop: -20 }}>
-                        <Text style={STYLES.bigdegree}>28{'\u02DA'} </Text>
+                        <Text style={STYLES.bigdegree}>{formattemp}{'\u02DA'} </Text>
                         <Image style={STYLES.scatterimg} source={require('../assets/openWeatherIcons/03d.png')} />
                     </View>
 
@@ -135,19 +172,19 @@ const HomeScreen = ({ navigation }) => {
                         <View style={{ ...STYLES.column1 }}>
                             <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/img.png')} />
                             <Text style={STYLES.weather}>Max Temp</Text>
-                            <Text style={STYLES.degree}>33{'\u2103'}</Text>
+                            <Text style={STYLES.degree}>{'\u2103'}</Text>
                         </View>
 
                         <View style={{ ...STYLES.column1 }}>
                             <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/humidity.png')} />
                             <Text style={STYLES.weather}>Humidity</Text>
-                            <Text style={STYLES.degree}>78%</Text>
+                            <Text style={STYLES.degree}>{data.main.humidity}%</Text>
                         </View>
 
                         <View style={{ ...STYLES.column1 }}>
                             <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/wind.png')} />
                             <Text style={STYLES.weather}>Wind</Text>
-                            <Text style={STYLES.degree}>4.4m/s</Text>
+                            <Text style={STYLES.degree}>{data.wind.speed}m/s</Text>
                         </View>
                     </View>
 
