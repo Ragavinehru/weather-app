@@ -4,7 +4,7 @@ import React from 'react';
 import Splash from './src/Screens/Splash';
 import HomeScreen from './src/Screens/HomeScreen';
 import Search from './src/Screens/Search';
-
+import CloudIcons from './src/Screens/CloudIcons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from "@react-navigation/drawer";
