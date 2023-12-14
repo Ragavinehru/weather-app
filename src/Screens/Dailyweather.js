@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -86,6 +86,72 @@ const DailyWeather = ({ navigation }) => {
         },
 
     ];
+
+    const [loading, setloading] = useState(true);
+    const [rise, setrise] = useState('');
+    const [set, setset] = useState('');
+
+    const [daily, setdaily] = useState([]);
+
+    const [selected, setselected] = useState([])
+    const [threehour, setthree] = useState([])
+
+    useEffect(() => {
+        const APIHour = () => {
+
+            const apihour = 'https://api.openweathermap.org/data/2.5/onecall?lat=9.925201&lon=78.119774&exclude=minutely,current,hourly&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric';
+
+            setloading(true);
+            fetch(apihour)
+                .then((resp) => resp.json())
+                .then((json) => {
+                    setdaily(json.daily);
+                    setloading(false);
+
+                    console.log("hahah", daily[0])
+
+                    // const timezoneOffset = sunrise;
+                    // const utcTime = moment.utc();
+                    // const localTime = utcTime.utcOffset(timezoneOffset / 60);
+                    // const rise = localTime.format('MMMM Do YYYY, h:mm a');
+
+
+                    // const timezoneset = sunset;
+                    // const utc = moment.utc();
+                    // const local = utc.utcOffset(timezoneset / 60);
+                    // const set = local.format('h:mm a'); setset(set)
+
+
+
+                    if (daily.length > 0) {
+                        const daysseven = [];
+
+                        for (let i = 0; i <= daily.length; i++) {
+                            const timezoneOffset = daily[i].dt;
+                            console.log("dt", timezoneOffset);
+                            const utcTime = moment.utc();
+                            const localTime = utcTime.utcOffset(timezoneOffset / 60);
+
+                            const days = localTime.format('MMMM Do YYYY, h:mm a');
+                            daysseven.push(days);
+                            console.log("dtffffffffffffff", days);
+                            console.log("dtff", daysseven);
+                        }
+                        setthree(daysseven)
+                        console.log("threehours", threehour)
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setloading(false);
+                });
+        };
+
+        APIHour();
+    }, []);
+
+
+
 
     const renderItem = ({ item }) => (
         <View style={styles.cell}>

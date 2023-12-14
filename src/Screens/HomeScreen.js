@@ -16,6 +16,9 @@ const HomeScreen = ({ navigation }) => {
     const [datahour, setdatahour] = useState('');
     const [hourlist, sethourlist] = useState([]);
     const [extractedData, setextractlist] = useState([]);
+    const [selected, setselected] = useState([])
+    const [threehours, setthree] = useState([])
+
 
     const backgroundImages = {
         '6:00 AM - 8:00 AM': require('../assets/BGImages/1.jpg'),
@@ -44,6 +47,7 @@ const HomeScreen = ({ navigation }) => {
 
     const backgroundImage = findBackgroundImage();
 
+
     const APIFn = () => {
         const api = 'https://api.openweathermap.org/data/2.5/weather?lat=9.928818&lon=78.167385&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric'
 
@@ -51,7 +55,10 @@ const HomeScreen = ({ navigation }) => {
         fetch(api)
             .then((resp) => resp.json())
             .then((json) => {
-                setdata(json); setloading(false); setFormattedTemperature(json.main.temp.toFixed(1));
+
+                setdata(json);
+                setloading(false);
+                setFormattedTemperature(json.main.temp.toFixed(1));
 
                 const timezoneOffset = json.timezone;
                 const utcTime = moment.utc();
@@ -64,59 +71,85 @@ const HomeScreen = ({ navigation }) => {
             })
             .catch((error) => { console.error(error); setloading(false) })
 
-        console.log("datahhhh", data)
+        console.log("datahhhh", data);
     }
 
 
-    const APIHour = () => {
-        const apihour = 'https://api.openweathermap.org/data/2.5/forecast?lat=9.925201&lon=78.119774&appid=3a9bee9c35ea0fc21779ccf795b8f5e6'
-        setloading(true);
-        fetch(apihour)
-            .then((resp) => resp.json())
-            .then((json) => {
-                setdatahour(json); setloading(false);
-            })
-            .catch((error) => { console.error(error); setloading(false) })
+    useEffect(() => {
+        const APIHour = () => {
+            const apihour = 'https://api.openweathermap.org/data/2.5/onecall?lat=9.925201&lon=78.119774&exclude=minutely,daily&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric';
 
-        console.log("hourly", datahour.list);
-        sethourlist(datahour.list);
-        console.log("hourlisttt", hourlist);
-    }
-  
+            setloading(true);
+            fetch(apihour)
+                .then((resp) => resp.json())
+                .then((json) => {
+                    setdatahour(json);
+                    setloading(false);
+                    sethourlist(json.hourly);
+
+                    const selectedhours = json.hourly.slice(0, 3);
+                    setselected(selectedhours);
+
+
+                    if (selectedhours.length > 0) {
+                        const threehours = [];
+                        for (let i = 0; i <= selectedhours.length; i++) {
+                            const timezoneOffset = selectedhours[i].dt;
+                            const utcTime = moment.utc();
+                            const localTime = utcTime.utcOffset(timezoneOffset / 60);
+                            const newset = localTime.format('h:mm a');
+                            threehours.push(newset);
+
+                        }
+                        setthree(threehours)
+                        console.log(threehours);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setloading(false);
+                });
+        };
+
+        APIHour();
+    }, []);
+    // const APIHour = () => {
+    //     const apihour = 'https://api.openweathermap.org/data/2.5/onecall?lat=9.925201&lon=78.119774&exclude=minutely,daily&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric'
+
+    //     setloading(true);
+    //     fetch(apihour)
+    //         .then((resp) => resp.json())
+    //         .then((json) => {
+    //             setdatahour(json); setloading(false);
+
+    //         })
+    //         .catch((error) => { console.error(error); setloading(false) })
+    //     console.log("hourly", datahour[0]);
+    //     sethourlist(datahour.hourly);
+
+    //     console.log("hourlisttt 1 and 2", hourlist);
+
+    //     if (hourlist) {
+    //         const selectedhours = hourlist.slice(0, 3);
+    //         setselected(selectedhours);
+    //         console.log("selected", selectedhours);
+
+    //         const timezoneOffset = selected[0].dt;
+    //         const utcTime = moment.utc();
+    //         const localTime = utcTime.utcOffset(timezoneOffset / 60);
+    //         const newset = localTime.format('h:mm a');
+    //         console.log(newset)
+    //     }
+    // }
+
     useEffect(() => {
 
         APIFn();
-           }, []);
-
-    useEffect(() => {
-
-        APIHour();
-      
     }, []);
-   
-   
-  useEffect(() => {
-    const fetchData = async () => {
-      await APIFn();
-      await APIHour();
-      
-      // Now, both API calls are completed
-      if (hourlist && hourlist.length >= 3) {
-        const extractedData = hourlist.slice(0, 3).map(hour => ({
-          temperature: convertToCelsius(hour.main.temp),
-          time: moment(hour.dt_txt).format('h:mm a'),
-        }));
-        setextractlist(extractedData);
-        console.log("Extracted Data:", extractedData);
-      }
-    };
-
-    fetchData();
-  }, []);
 
 
 
-    
+
 
     // const location = () => {
     //     GetLocation.getCurrentPosition({
@@ -141,9 +174,7 @@ const HomeScreen = ({ navigation }) => {
         navigation.dispatch(DrawerActions.openDrawer());
     };
 
-
     if (loading) {
-
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator size="large" color="#FCA351" />
@@ -155,7 +186,6 @@ const HomeScreen = ({ navigation }) => {
     return (
         <View style={{ flex: 1 }}>
             <StatusBar backgroundColor="black" barStyle="light-content" />
-
             <ImageBackground style={STYLES.background} source={backgroundImage} resizeMode='stretch'>
 
                 <ScrollView>
@@ -192,7 +222,7 @@ const HomeScreen = ({ navigation }) => {
 
                     </View>
 
-                    <Text style={STYLES.scatterclouds}>{data.weather[0].main}</Text>
+                    <Text style={STYLES.scatterclouds}>{data?.weather[0]?.main}</Text>
 
                     <View style={{ ...STYLES.card, justifyContent: 'space-between', marginTop: 20, paddingHorizontal: 40, paddingVertical: 30 }}>
                         <View style={{ ...STYLES.column1 }}>
@@ -213,27 +243,28 @@ const HomeScreen = ({ navigation }) => {
                             <Text style={STYLES.degree}>{data.wind.speed}m/s</Text>
                         </View>
                     </View>
+
                     <TouchableOpacity onPress={() => navigation.navigate('Today')}>
                         <View style={{ ...STYLES.card, marginTop: 10, justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
                             <View style={{ ...STYLES.column1, }}>
-                                <Text style={STYLES.temparature}>28.86{'\u2103'}</Text>
-                                <Text style={STYLES.scatter}>SCATTERED CLOUDS</Text>
+                                <Text style={STYLES.temparature}>{selected[0]?.temp}{'\u2103'}</Text>
+                                <Text style={STYLES.scatter}>{selected[0]?.weather[0]?.description.toUpperCase()}</Text>
                                 <Image style={STYLES.img2} source={require('../assets/openWeatherIcons/03d.png')} />
-                                <Text style={STYLES.timetext}>22 pm</Text>
+                                <Text style={STYLES.timetext}>{threehours[0]}</Text>
                             </View>
 
                             <View style={{ ...STYLES.column1 }}>
-                                <Text style={STYLES.temparature}>28.83 {'\u2103'}</Text>
-                                <Text style={STYLES.scatter}>SCATTERED CLOUDS</Text>
+                                <Text style={STYLES.temparature}>{selected[1]?.temp}{'\u2103'}</Text>
+                                <Text style={STYLES.scatter}>{selected[1]?.weather[0]?.description.toUpperCase()}</Text>
                                 <Image style={STYLES.img2} source={require('../assets/openWeatherIcons/03d.png')} />
-                                <Text style={STYLES.timetext}>12:30 PM</Text>
+                                <Text style={STYLES.timetext}>{threehours[1]}</Text>
                             </View>
 
                             <View style={{ ...STYLES.column1, marginRight: 2 }}>
-                                <Text style={STYLES.temparature}>28.38{'\u2103'}</Text>
-                                <Text style={STYLES.scatter}>SCATTERED CLOUDS</Text>
+                                <Text style={STYLES.temparature}>{selected[2]?.temp}{'\u2103'}</Text>
+                                <Text style={STYLES.scatter}>{selected[2]?.weather[0]?.description.toUpperCase()}</Text>
                                 <Image style={STYLES.img2} source={require('../assets/openWeatherIcons/04d.png')} />
-                                <Text style={STYLES.timetext}>1:30 PM</Text>
+                                <Text style={STYLES.timetext}>{threehours[2]}</Text>
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -247,7 +278,7 @@ export default HomeScreen;
 
 const STYLES = StyleSheet.create({
     card: {
-        // flex: 1,
+
         flexDirection: 'row',
         backgroundColor: 'white',
         borderRadius: 10,
@@ -261,18 +292,22 @@ const STYLES = StyleSheet.create({
         alignSelf: 'center'
     },
     column1: {
-        alignItems: 'center'
+        alignItems: 'center',
+        justifyContent: 'center'
 
     },
     timetext: {
         color: '#A1A1A1', fontWeight: 'bold', fontSize: 16
     },
     scatter: {
+
+        textAlign: 'center',
         fontSize: 10,
         width: 100,
         marginBottom: 20,
         color: '#5A5A5A'
     },
+
     img2: {
 
         height: 51,
