@@ -14,8 +14,8 @@ const HomeScreen = ({ navigation }) => {
     const [city, setcity] = useState('');
     const [data, setdata] = useState('');
     const [datahour, setdatahour] = useState('');
-    const [loca, setlocation] = useState('');
-
+    const [hourlist, sethourlist] = useState([]);
+    const [extractedData, setextractlist] = useState([]);
 
     const backgroundImages = {
         '6:00 AM - 8:00 AM': require('../assets/BGImages/1.jpg'),
@@ -44,22 +44,8 @@ const HomeScreen = ({ navigation }) => {
 
     const backgroundImage = findBackgroundImage();
 
-
-
-    // const backgroundImage = findBackgroundImage(formattedTime) || require('../assets/BGImages/1.jpg');
-
-    // const backgroundImage = findBackgroundImage(formattedTime);
-
-
-
-    // const iconPath = iconMappings[IconName] || require('../assets/openWeatherIcons/01d.png');
-
     const APIFn = () => {
         const api = 'https://api.openweathermap.org/data/2.5/weather?lat=9.928818&lon=78.167385&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric'
-
-
-        // const apihour = 'https://pro.openweathermap.org/data/2.5/forecast/climate?lat=35&lon=139&appid=f19d262769dd03d6a30e3c2960d16ae8'
-
 
         setloading(true);
         fetch(api)
@@ -75,113 +61,81 @@ const HomeScreen = ({ navigation }) => {
                 setFormattedTime(formattedTime);
                 setFormattedDate(formatted);
 
-
-
-
             })
             .catch((error) => { console.error(error); setloading(false) })
 
         console.log("datahhhh", data)
-
-
     }
 
 
     const APIHour = () => {
-        // const api = 'https://api.openweathermap.org/data/2.5/weather?lat=9.928818&lon=78.167385&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric'
         const apihour = 'https://api.openweathermap.org/data/2.5/forecast?lat=9.925201&lon=78.119774&appid=3a9bee9c35ea0fc21779ccf795b8f5e6'
-
         setloading(true);
         fetch(apihour)
             .then((resp) => resp.json())
             .then((json) => {
-
                 setdatahour(json); setloading(false);
-
             })
             .catch((error) => { console.error(error); setloading(false) })
 
-        console.log("hourly", datahour);
-
+        console.log("hourly", datahour.list);
+        sethourlist(datahour.list);
+        console.log("hourlisttt", hourlist);
     }
-    // for (let i = 0; i <= datahour.list.length; i++) {
-
-    //     const HourTime = moment(datahour.list[i].dt_txt).format('h:mm A');
-    //     datahour.list[i].dt_txt = HourTime;
-    // }
-
-    // console.log("three hours", datahour.list);
-
-
+  
     useEffect(() => {
 
         APIFn();
-        // APIHour();
-        // APINEW();
-    }, []);
+           }, []);
 
     useEffect(() => {
 
-        // APIFn();
         APIHour();
-        // APINEW();
+      
     }, []);
-    useEffect(() => {
+   
+   
+  useEffect(() => {
+    const fetchData = async () => {
+      await APIFn();
+      await APIHour();
+      
+      // Now, both API calls are completed
+      if (hourlist && hourlist.length >= 3) {
+        const extractedData = hourlist.slice(0, 3).map(hour => ({
+          temperature: convertToCelsius(hour.main.temp),
+          time: moment(hour.dt_txt).format('h:mm a'),
+        }));
+        setextractlist(extractedData);
+        console.log("Extracted Data:", extractedData);
+      }
+    };
 
-        if (datahour && datahour.list) {
-            const formattedList = datahour.list.map(item => {
-                const HourTime = moment(item.dt_txt).format('h:mm A');
-                return { ...item, dt_txt: HourTime };
-            });
-            setdatahour({ ...datahour, list: formattedList });
-            console.log("three hours", formattedList);
-        }
-    }, [datahour]);
-
-
-    // useEffect(() => {
-
-    //     const timezoneOffset = data.timezone;
-    //     const utcTime = moment.utc();
-    //     const localTime = utcTime.utcOffset(timezoneOffset / 60);
-    //     const formatted = localTime.format('MMMM Do YYYY, h:mm a');
-    //     const formattedTime = localTime.format('h:mm a');
-    //     setFormattedTime(formattedTime);
-    //     setFormattedDate(formatted);
-    //     console.log("timedate ", formattedTime)
-
-    // }, []);
+    fetchData();
+  }, []);
 
 
-    const location = () => {
-        GetLocation.getCurrentPosition({
-            enableHighAccuracy: true,
-            timeout: 60000,
-        })
-            .then(location => {
-                console.log("jjjjjj", location);
-                setlocation(location);
-            })
-            .catch(error => {
-                const { code, message } = error;
-                console.warn("ggggggggggg", code, message);
-            })
 
-    }
-    useEffect(() => {
-        location();
-    }, []);
+    
 
+    // const location = () => {
+    //     GetLocation.getCurrentPosition({
+    //         enableHighAccuracy: true,
+    //         timeout: 60000,
+    //     })
+    //         .then(location => {
+    //             console.log("jjjjjj", location);
+    //             setlocation(location);
+    //         })
+    //         .catch(error => {
+    //             const { code, message } = error;
+    //             console.warn("ggggggggggg", code, message);
+    //         })
 
-    // const Temperature = () => {
-
-    //     const formattedTemperature = temperature.toFixed(1);
-    //     console.log("garrrr", formattedTemperature)
     // }
     // useEffect(() => {
-    //     Temperature();
+    //     location();
     // }, []);
-
 
     const openDrawer = () => {
         navigation.dispatch(DrawerActions.openDrawer());
@@ -265,7 +219,7 @@ const HomeScreen = ({ navigation }) => {
                                 <Text style={STYLES.temparature}>28.86{'\u2103'}</Text>
                                 <Text style={STYLES.scatter}>SCATTERED CLOUDS</Text>
                                 <Image style={STYLES.img2} source={require('../assets/openWeatherIcons/03d.png')} />
-                                <Text style={STYLES.timetext}>11:30 AM</Text>
+                                <Text style={STYLES.timetext}>22 pm</Text>
                             </View>
 
                             <View style={{ ...STYLES.column1 }}>
