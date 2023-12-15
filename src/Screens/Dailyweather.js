@@ -154,71 +154,71 @@ const DailyWeather = ({ navigation }) => {
 
     const getWeatherIcon = (iconName) => {
         let iconPath;
-      
+
         switch (iconName) {
-          case '01d':
-            iconPath = require('../assets/openWeatherIcons/01d.png');
-            break;
-          case '01n':
-            iconPath = require('../assets/openWeatherIcons/01n.png');
-            break;
-          case '02d':
-            iconPath = require('../assets/openWeatherIcons/02d.png');
-            break;
-          case '02n':
-            iconPath = require('../assets/openWeatherIcons/02n.png');
-             break;
-             case '03d':
+            case '01d':
+                iconPath = require('../assets/openWeatherIcons/01d.png');
+                break;
+            case '01n':
+                iconPath = require('../assets/openWeatherIcons/01n.png');
+                break;
+            case '02d':
+                iconPath = require('../assets/openWeatherIcons/02d.png');
+                break;
+            case '02n':
+                iconPath = require('../assets/openWeatherIcons/02n.png');
+                break;
+            case '03d':
                 iconPath = require('../assets/openWeatherIcons/03d.png');
                 break;
-              case '03n':
+            case '03n':
                 iconPath = require('../assets/openWeatherIcons/03n.png');
                 break;
-              case '04d':
+            case '04d':
                 iconPath = require('../assets/openWeatherIcons/04d.png');
                 break;
-              case '04n':
+            case '04n':
                 iconPath = require('../assets/openWeatherIcons/04n.png');
-                 break;
-                 case '09d':
-                    iconPath = require('../assets/openWeatherIcons/09d.png');
-                    break;
-                  case '09n':
-                    iconPath = require('../assets/openWeatherIcons/09n.png');
-                    break;
-                  case '10d':
-                    iconPath = require('../assets/openWeatherIcons/10d.png');
-                    break;
-                  case '10n':
-                    iconPath = require('../assets/openWeatherIcons/10n.png');
-                     break;  
-             
-                    case '11d':
-                        iconPath = require('../assets/openWeatherIcons/11d.png');
-                        break;
-                      case '11n':
-                        iconPath = require('../assets/openWeatherIcons/11n.png');
-                        break;
-                      case '13d':
-                        iconPath = require('../assets/openWeatherIcons/13d.png');
-                        break;
-                      case '13n':
-                        iconPath = require('../assets/openWeatherIcons/13n.png');
-                         break; 
-                         case '50d':
-                        iconPath = require('../assets/openWeatherIcons/50d.png');
-                        break;
-                      case '50n':
-                        iconPath = require('../assets/openWeatherIcons/50n.png');
-                         break;  
-          default:
-           
-            iconPath = require('../assets/openWeatherIcons/01n.png');
+                break;
+            case '09d':
+                iconPath = require('../assets/openWeatherIcons/09d.png');
+                break;
+            case '09n':
+                iconPath = require('../assets/openWeatherIcons/09n.png');
+                break;
+            case '10d':
+                iconPath = require('../assets/openWeatherIcons/10d.png');
+                break;
+            case '10n':
+                iconPath = require('../assets/openWeatherIcons/10n.png');
+                break;
+
+            case '11d':
+                iconPath = require('../assets/openWeatherIcons/11d.png');
+                break;
+            case '11n':
+                iconPath = require('../assets/openWeatherIcons/11n.png');
+                break;
+            case '13d':
+                iconPath = require('../assets/openWeatherIcons/13d.png');
+                break;
+            case '13n':
+                iconPath = require('../assets/openWeatherIcons/13n.png');
+                break;
+            case '50d':
+                iconPath = require('../assets/openWeatherIcons/50d.png');
+                break;
+            case '50n':
+                iconPath = require('../assets/openWeatherIcons/50n.png');
+                break;
+            default:
+
+                iconPath = require('../assets/openWeatherIcons/01n.png');
         }
-      
+
         return iconPath;
-      };
-      
+    };
+
 
     const renderItem = ({ item }) => {
         const date = moment.unix(item.dt).format('MM/DD');
@@ -237,13 +237,13 @@ const DailyWeather = ({ navigation }) => {
                     </View>
                 </View>
 
-                <View style={{ alignItems: "center" }}>
+                <View style={{ alignItems: "center", }}>
                     <View style={{ flexDirection: 'row', alignItems: "center", }}>
                         <Text style={{
                             color: '#5A5A5A',
                             fontWeight: '500', fontSize: 15
                         }}>{item.temp.day.toFixed(1)}{'\u2103'}</Text>
-                      <Image style={styles.img} source={getWeatherIcon(weatherIcon)} />
+                        <Image style={styles.img} source={getWeatherIcon(weatherIcon)} />
                     </View>
                     <Text style={styles.status}>{item.weather[0].description.toUpperCase()}</Text>
                 </View>
@@ -298,10 +298,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 8,
+        marginBottom: 9,
         borderRadius: 8,
-        padding: 9,
-
+        padding: 10,
         marginHorizontal: 45,
     },
     image: {

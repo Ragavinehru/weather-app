@@ -68,6 +68,70 @@ const TodayWeather = ({ navigation }) => {
         APIHour();
     }, []);
 
+    const getWeatherIcon = (iconName) => {
+        let iconPath;
+
+        switch (iconName) {
+            case '01d':
+                iconPath = require('../assets/openWeatherIcons/01d.png');
+                break;
+            case '01n':
+                iconPath = require('../assets/openWeatherIcons/01n.png');
+                break;
+            case '02d':
+                iconPath = require('../assets/openWeatherIcons/02d.png');
+                break;
+            case '02n':
+                iconPath = require('../assets/openWeatherIcons/02n.png');
+                break;
+            case '03d':
+                iconPath = require('../assets/openWeatherIcons/03d.png');
+                break;
+            case '03n':
+                iconPath = require('../assets/openWeatherIcons/03n.png');
+                break;
+            case '04d':
+                iconPath = require('../assets/openWeatherIcons/04d.png');
+                break;
+            case '04n':
+                iconPath = require('../assets/openWeatherIcons/04n.png');
+                break;
+            case '09d':
+                iconPath = require('../assets/openWeatherIcons/09d.png');
+                break;
+            case '09n':
+                iconPath = require('../assets/openWeatherIcons/09n.png');
+                break;
+            case '10d':
+                iconPath = require('../assets/openWeatherIcons/10d.png');
+                break;
+            case '10n':
+                iconPath = require('../assets/openWeatherIcons/10n.png');
+                break;
+            case '11d':
+                iconPath = require('../assets/openWeatherIcons/11d.png');
+                break;
+            case '11n':
+                iconPath = require('../assets/openWeatherIcons/11n.png');
+                break;
+            case '13d':
+                iconPath = require('../assets/openWeatherIcons/13d.png');
+                break;
+            case '13n':
+                iconPath = require('../assets/openWeatherIcons/13n.png');
+                break;
+            case '50d':
+                iconPath = require('../assets/openWeatherIcons/50d.png');
+                break;
+            case '50n':
+                iconPath = require('../assets/openWeatherIcons/50n.png');
+                break;
+            default:
+                iconPath = require('../assets/openWeatherIcons/01n.png');
+        }
+
+        return iconPath;
+    };
 
 
 
@@ -100,24 +164,25 @@ const TodayWeather = ({ navigation }) => {
                     <View style={{ alignItems: 'center' }}>
                         <Text style={{ color: 'black', fontSize: 16 }}>{selected[0]?.temp}{'\u2103'}</Text>
                         <Text style={{ fontSize: 10, width: 100, marginBottom: 20, fontWeight: 'bold' }}>{selected[0]?.weather[0]?.description.toUpperCase()}</Text>
-                        <Image style={{ height: 41, width: 52, marginBottom: 7 }} source={require('../assets/openWeatherIcons/03d.png')} />
+                        <Image style={{ height: 41, width: 52, marginBottom: 7 }} source={getWeatherIcon(selected[0]?.weather[0]?.icon)} />
                         <Text style={{}}>{threehours[0]}</Text>
                     </View>
 
                     <View style={{ alignItems: 'center' }}>
                         <Text style={{ color: 'black', fontSize: 16, }}>{selected[1]?.temp} {'\u2103'}</Text>
                         <Text style={{ fontSize: 10, width: 100, marginBottom: 20, fontWeight: 'bold' }}>{selected[1]?.weather[0]?.description.toUpperCase()}</Text>
-                        <Image style={{ height: 41, width: 52, marginBottom: 7 }} source={require('../assets/openWeatherIcons/03d.png')} />
+                        <Image style={{ height: 41, width: 52, marginBottom: 7 }} source={getWeatherIcon(selected[1]?.weather[0]?.icon)} />
                         <Text style={{}}>{threehours[1]}</Text>
                     </View>
 
                     <View style={{ alignItems: 'center' }}>
                         <Text style={{ color: 'black', fontSize: 16, }}>{selected[2]?.temp}{'\u2103'}</Text>
-                        <Text style={{ fontSize: 10, width: 100, marginBottom: 20, fontWeight: 'bold' }}>{selected[1]?.weather[0]?.description.toUpperCase()}</Text>
-                        <Image style={{ height: 41, width: 52, marginBottom: 7 }} source={require('../assets/openWeatherIcons/04d.png')} />
+                        <Text style={{ fontSize: 10, width: 100, marginBottom: 20, fontWeight: 'bold' }}>{selected[2]?.weather[0]?.description.toUpperCase()}</Text>
+                        <Image style={{ height: 41, width: 52, marginBottom: 7 }} source={getWeatherIcon(selected[2]?.weather[0]?.icon)} />
                         <Text>{threehours[2]}</Text>
                     </View>
                 </View>
+
             </ScrollView>
         </View>
     )
