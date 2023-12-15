@@ -1,91 +1,91 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-
+import moment from 'moment';
 const DailyWeather = ({ navigation }) => {
-    const data = [
-        {
-            id: 1,
-            day: "Wednesday",
-            date: '12/01',
-            temp: 28,
-            imageSource: require('../assets/openWeatherIcons/10d.png'),
-            status: 'LIGHT RAIN',
-            max: 28,
-            min: 25,
-        },
-        {
-            id: 1,
-            day: "Thursday",
-            date: '12/01',
-            temp: 28,
-            imageSource: require('../assets/openWeatherIcons/10d.png'),
-            status: 'LIGHT RAIN',
-            max: 28,
-            min: 24,
-        },
-        {
-            id: 1,
-            day: "Friday",
-            date: '12/01',
-            temp: 29,
-            imageSource: require('../assets/openWeatherIcons/10d.png'),
-            status: 'OVERCAST RAIN',
-            max: 28,
-            min: 25,
-        },
-        {
-            id: 1,
-            day: "Saturday",
-            date: '12/01',
-            temp: 29,
-            imageSource: require('../assets/openWeatherIcons/10d.png'),
-            status: 'LIGHT RAIN',
-            max: 29,
-            min: 24,
-        },
-        {
-            id: 1,
-            day: "Sunday",
-            date: '12/01',
-            temp: 29,
-            imageSource: require('../assets/openWeatherIcons/10d.png'),
-            status: 'LIGHT RAIN',
-            max: 29,
-            min: 23,
-        },
-        {
-            id: 1,
-            day: "Monday",
-            date: '12/01',
-            temp: 29,
-            imageSource: require('../assets/openWeatherIcons/10d.png'),
-            status: 'LIGHT RAIN',
-            max: 29,
-            min: 23,
-        },
-        {
-            id: 1,
-            day: "Tuesday",
-            date: '12/01',
-            temp: 28,
-            imageSource: require('../assets/openWeatherIcons/10d.png'),
-            status: 'LIGHT RAIN',
-            max: 28,
-            min: 23,
-        },
-        {
-            id: 1,
-            day: "Wednesday",
-            date: '12/01',
-            temp: 28,
-            imageSource: require('../assets/openWeatherIcons/10d.png'),
-            status: 'MODERATE RAIN',
-            max: 28,
-            min: 23,
-        },
+    // const data = [
+    //     {
+    //         id: 1,
+    //         day: "Wednesday",
+    //         date: '12/01',
+    //         temp: 28,
+    //         imageSource: require('../assets/openWeatherIcons/10d.png'),
+    //         status: 'LIGHT RAIN',
+    //         max: 28,
+    //         min: 25,
+    //     },
+    //     {
+    //         id: 1,
+    //         day: "Thursday",
+    //         date: '12/01',
+    //         temp: 28,
+    //         imageSource: require('../assets/openWeatherIcons/10d.png'),
+    //         status: 'LIGHT RAIN',
+    //         max: 28,
+    //         min: 24,
+    //     },
+    //     {
+    //         id: 1,
+    //         day: "Friday",
+    //         date: '12/01',
+    //         temp: 29,
+    //         imageSource: require('../assets/openWeatherIcons/10d.png'),
+    //         status: 'OVERCAST RAIN',
+    //         max: 28,
+    //         min: 25,
+    //     },
+    //     {
+    //         id: 1,
+    //         day: "Saturday",
+    //         date: '12/01',
+    //         temp: 29,
+    //         imageSource: require('../assets/openWeatherIcons/10d.png'),
+    //         status: 'LIGHT RAIN',
+    //         max: 29,
+    //         min: 24,
+    //     },
+    //     {
+    //         id: 1,
+    //         day: "Sunday",
+    //         date: '12/01',
+    //         temp: 29,
+    //         imageSource: require('../assets/openWeatherIcons/10d.png'),
+    //         status: 'LIGHT RAIN',
+    //         max: 29,
+    //         min: 23,
+    //     },
+    //     {
+    //         id: 1,
+    //         day: "Monday",
+    //         date: '12/01',
+    //         temp: 29,
+    //         imageSource: require('../assets/openWeatherIcons/10d.png'),
+    //         status: 'LIGHT RAIN',
+    //         max: 29,
+    //         min: 23,
+    //     },
+    //     {
+    //         id: 1,
+    //         day: "Tuesday",
+    //         date: '12/01',
+    //         temp: 28,
+    //         imageSource: require('../assets/openWeatherIcons/10d.png'),
+    //         status: 'LIGHT RAIN',
+    //         max: 28,
+    //         min: 23,
+    //     },
+    //     {
+    //         id: 1,
+    //         day: "Wednesday",
+    //         date: '12/01',
+    //         temp: 28,
+    //         imageSource: require('../assets/openWeatherIcons/10d.png'),
+    //         status: 'MODERATE RAIN',
+    //         max: 28,
+    //         min: 23,
+    //     },
 
-    ];
+    // ];
 
     const [loading, setloading] = useState(true);
     const [rise, setrise] = useState('');
@@ -152,42 +152,121 @@ const DailyWeather = ({ navigation }) => {
 
 
 
+    const getWeatherIcon = (iconName) => {
+        let iconPath;
+      
+        switch (iconName) {
+          case '01d':
+            iconPath = require('../assets/openWeatherIcons/01d.png');
+            break;
+          case '01n':
+            iconPath = require('../assets/openWeatherIcons/01n.png');
+            break;
+          case '02d':
+            iconPath = require('../assets/openWeatherIcons/02d.png');
+            break;
+          case '02n':
+            iconPath = require('../assets/openWeatherIcons/02n.png');
+             break;
+             case '03d':
+                iconPath = require('../assets/openWeatherIcons/03d.png');
+                break;
+              case '03n':
+                iconPath = require('../assets/openWeatherIcons/03n.png');
+                break;
+              case '04d':
+                iconPath = require('../assets/openWeatherIcons/04d.png');
+                break;
+              case '04n':
+                iconPath = require('../assets/openWeatherIcons/04n.png');
+                 break;
+                 case '09d':
+                    iconPath = require('../assets/openWeatherIcons/09d.png');
+                    break;
+                  case '09n':
+                    iconPath = require('../assets/openWeatherIcons/09n.png');
+                    break;
+                  case '10d':
+                    iconPath = require('../assets/openWeatherIcons/10d.png');
+                    break;
+                  case '10n':
+                    iconPath = require('../assets/openWeatherIcons/10n.png');
+                     break;  
+             
+                    case '11d':
+                        iconPath = require('../assets/openWeatherIcons/11d.png');
+                        break;
+                      case '11n':
+                        iconPath = require('../assets/openWeatherIcons/11n.png');
+                        break;
+                      case '13d':
+                        iconPath = require('../assets/openWeatherIcons/13d.png');
+                        break;
+                      case '13n':
+                        iconPath = require('../assets/openWeatherIcons/13n.png');
+                         break; 
+                         case '50d':
+                        iconPath = require('../assets/openWeatherIcons/50d.png');
+                        break;
+                      case '50n':
+                        iconPath = require('../assets/openWeatherIcons/50n.png');
+                         break;  
+          default:
+           
+            iconPath = require('../assets/openWeatherIcons/01n.png');
+        }
+      
+        return iconPath;
+      };
+      
 
-    const renderItem = ({ item }) => (
-        <View style={styles.cell}>
-            <View>
-                <Text style={styles.text}>{item.day}</Text>
-                <View style={{ flexDirection: 'row', alignItems: "center", marginTop: 10 }}>
-                    <Image style={styles.calendar} source={require('../assets/openWeatherIcons/calendar.png')} />
-                    <Text style={{ marginLeft: 10 }}>{item.date}</Text>
+    const renderItem = ({ item }) => {
+        const date = moment.unix(item.dt).format('MM/DD');
+        const day = moment.unix(item.dt).format('dddd');
+        const maxTemp = item.temp.max.toFixed(1);
+        const minTemp = item.temp.min.toFixed(1);
+        const weatherIcon = item.weather[0].icon;
+
+        return (
+            <View style={styles.cell}>
+                <View>
+                    <Text style={styles.text}>{day}</Text>
+                    <View style={{ flexDirection: 'row', alignItems: "center", marginTop: 10 }}>
+                        <Image style={styles.calendar} source={require('../assets/openWeatherIcons/calendar.png')} />
+                        <Text style={{ marginLeft: 10 }}>{date}</Text>
+                    </View>
+                </View>
+
+                <View style={{ alignItems: "center" }}>
+                    <View style={{ flexDirection: 'row', alignItems: "center", }}>
+                        <Text style={{
+                            color: '#5A5A5A',
+                            fontWeight: '500', fontSize: 15
+                        }}>{item.temp.day.toFixed(1)}{'\u2103'}</Text>
+                      <Image style={styles.img} source={getWeatherIcon(weatherIcon)} />
+                    </View>
+                    <Text style={styles.status}>{item.weather[0].description.toUpperCase()}</Text>
+                </View>
+
+                <View style={{ flexDirection: 'row', alignItems: "center" }}>
+                    <Image style={{ ...styles.img, }} source={require('../assets/openWeatherIcons/img_1.png')} />
+                    <View style={{ marginLeft: 5 }}>
+                        <Text style={{ color: '#D35400' }}>Max {maxTemp}{'\u2103'}</Text>
+                        <Text style={{ color: '#00AEFF' }}>Min {minTemp}{'\u2103'}</Text>
+                    </View>
                 </View>
             </View>
+        );
+    };
 
-
-            <View style={{ alignItems: "center" }}>
-                <View style={{ flexDirection: 'row', alignItems: "center", }}>
-                    <Text style={{
-                        color: '#5A5A5A',
-                        fontWeight: '500', fontSize: 15
-                    }}>{item.temp}{'\u2103'}</Text>
-                    <Image style={styles.img} source={item.imageSource} />
-                </View>
-                <Text style={styles.status}>{item.status}</Text>
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#FCA351" />
+                <Text>Loading...</Text>
             </View>
-
-
-            <View style={{ flexDirection: 'row', alignItems: "center" }}>
-
-                <Image style={{ ...styles.img, }} source={require('../assets/openWeatherIcons/img_1.png')} />
-                <View style={{ marginLeft: 5 }}>
-                    <Text style={{ color: '#D35400' }}>Max {item.max}{'\u2103'}</Text>
-                    <Text style={{ color: '#00AEFF' }}>Min {item.min}{'\u2103'}</Text>
-
-                </View>
-            </View>
-        </View>
-    );
-
+        );
+    }
     return (
 
         <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -199,9 +278,9 @@ const DailyWeather = ({ navigation }) => {
             </View>
 
             <FlatList
-                data={data}
+                data={daily}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.dt.toString()}
             />
         </View>
     );

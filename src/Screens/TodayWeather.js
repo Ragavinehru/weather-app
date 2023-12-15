@@ -45,19 +45,19 @@ const TodayWeather = ({ navigation }) => {
 
 
 
-                    if (selectedhours.length > 0) {
-                        const threehours = [];
-                        for (let i = 0; i <= selectedhours.length; i++) {
-                            const timezoneOffset = selectedhours[i].dt;
+                    const threehours = [];
+                    for (let i = 0; i < selectedhours.length; i++) {
+                        const dt = selectedhours[i]?.dt;
+                        if (dt) {
+                            const timezoneOffset = dt;
                             const utcTime = moment.utc();
                             const localTime = utcTime.utcOffset(timezoneOffset / 60);
                             const newset = localTime.format('h:mm a');
                             threehours.push(newset);
-
                         }
-                        setthree(threehours)
-                        console.log(threehours);
                     }
+                    setthree(threehours);
+                    console.log(threehours)
                 })
                 .catch((error) => {
                     console.error(error);

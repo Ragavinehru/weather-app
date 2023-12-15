@@ -2,7 +2,8 @@ import { View, Text, ScrollView, Image, TouchableOpacity, ImageBackground, Statu
 import React, { useEffect, useState } from 'react'
 import { StyleSheet } from 'react-native';
 import { DrawerActions } from '@react-navigation/native';
-import GetLocation from 'react-native-get-location'
+import GetLocation from 'react-native-get-location';
+import Geolocation from '@react-native-community/geolocation';
 import moment from 'moment-timezone';
 
 const HomeScreen = ({ navigation }) => {
@@ -18,7 +19,7 @@ const HomeScreen = ({ navigation }) => {
     const [extractedData, setextractlist] = useState([]);
     const [selected, setselected] = useState([])
     const [threehours, setthree] = useState([])
-
+    const [location, setlocation] = useState([])
 
     const backgroundImages = {
         '6:00 AM - 8:00 AM': require('../assets/BGImages/1.jpg'),
@@ -47,34 +48,51 @@ const HomeScreen = ({ navigation }) => {
 
     const backgroundImage = findBackgroundImage();
 
+ 
+useEffect(() => {
+    const getLocationAndFetchData = async () => {
+        try {           
+            Geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    console.log("posiii",position)
+                    const api = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric`;
 
-    const APIFn = () => {
-        const api = 'https://api.openweathermap.org/data/2.5/weather?lat=9.928818&lon=78.167385&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric'
+                    setloading(true);
+                    const response = await fetch(api);
+                    const json = await response.json();
 
-        setloading(true);
-        fetch(api)
-            .then((resp) => resp.json())
-            .then((json) => {
+                
+                    setdata(json);
+                    setloading(false);
+                    setFormattedTemperature(json?.main?.temp?.toFixed(1));
 
-                setdata(json);
-                setloading(false);
-                setFormattedTemperature(json.main.temp.toFixed(1));
+                    const weatherIcon = data.weather[0].icon;
+                    const timezoneOffset = json?.timezone;
+                    const utcTime = moment.utc();
+                    const localTime = utcTime.utcOffset(timezoneOffset / 60);
+                    const formatted = localTime.format('MMMM Do YYYY, h:mm a');
+                    const formattedTime = localTime.format('h:mm a');
+                    setFormattedTime(formattedTime);
+                    setFormattedDate(formatted);
+                },
+                (error) => {
+                    console.error('Error getting location:', error);
+                    setloading(false);
+                },
+                { enableHighAccuracy: true, timeout: 30000 }
+            );
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setloading(false);
+        }
+    };
 
-                const timezoneOffset = json.timezone;
-                const utcTime = moment.utc();
-                const localTime = utcTime.utcOffset(timezoneOffset / 60);
-                const formatted = localTime.format('MMMM Do YYYY, h:mm a');
-                const formattedTime = localTime.format('h:mm a');
-                setFormattedTime(formattedTime);
-                setFormattedDate(formatted);
+   
+    getLocationAndFetchData();
+}, []); 
 
-            })
-            .catch((error) => { console.error(error); setloading(false) })
-
-        console.log("datahhhh", data);
-    }
-
-
+    
     useEffect(() => {
         const APIHour = () => {
             const apihour = 'https://api.openweathermap.org/data/2.5/onecall?lat=9.925201&lon=78.119774&exclude=minutely,daily&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric';
@@ -90,68 +108,32 @@ const HomeScreen = ({ navigation }) => {
                     const selectedhours = json.hourly.slice(0, 3);
                     setselected(selectedhours);
 
-
-                    if (selectedhours.length > 0) {
-                        const threehours = [];
-                        for (let i = 0; i <= selectedhours.length; i++) {
-                            const timezoneOffset = selectedhours[i].dt;
+                    const threehours = [];
+                    for (let i = 0; i < selectedhours.length; i++) {
+                        const dt = selectedhours[i]?.dt;
+                        if (dt) {
+                            const timezoneOffset = dt;
                             const utcTime = moment.utc();
                             const localTime = utcTime.utcOffset(timezoneOffset / 60);
                             const newset = localTime.format('h:mm a');
                             threehours.push(newset);
-
                         }
-                        setthree(threehours)
-                        console.log(threehours);
                     }
+                    setthree(threehours);
+                    console.log(threehours)
+                    
                 })
                 .catch((error) => {
                     console.error(error);
                     setloading(false);
                 });
+                console.log("data",data)
         };
 
         APIHour();
     }, []);
-    // const APIHour = () => {
-    //     const apihour = 'https://api.openweathermap.org/data/2.5/onecall?lat=9.925201&lon=78.119774&exclude=minutely,daily&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric'
-
-    //     setloading(true);
-    //     fetch(apihour)
-    //         .then((resp) => resp.json())
-    //         .then((json) => {
-    //             setdatahour(json); setloading(false);
-
-    //         })
-    //         .catch((error) => { console.error(error); setloading(false) })
-    //     console.log("hourly", datahour[0]);
-    //     sethourlist(datahour.hourly);
-
-    //     console.log("hourlisttt 1 and 2", hourlist);
-
-    //     if (hourlist) {
-    //         const selectedhours = hourlist.slice(0, 3);
-    //         setselected(selectedhours);
-    //         console.log("selected", selectedhours);
-
-    //         const timezoneOffset = selected[0].dt;
-    //         const utcTime = moment.utc();
-    //         const localTime = utcTime.utcOffset(timezoneOffset / 60);
-    //         const newset = localTime.format('h:mm a');
-    //         console.log(newset)
-    //     }
-    // }
-
-    useEffect(() => {
-
-        APIFn();
-    }, []);
-
-
-
-
-
-    // const location = () => {
+   
+    // const locationr = () => {
     //     GetLocation.getCurrentPosition({
     //         enableHighAccuracy: true,
     //         timeout: 60000,
@@ -167,7 +149,7 @@ const HomeScreen = ({ navigation }) => {
 
     // }
     // useEffect(() => {
-    //     location();
+    //     locationr();
     // }, []);
 
     const openDrawer = () => {
@@ -182,6 +164,72 @@ const HomeScreen = ({ navigation }) => {
             </View>
         );
     }
+
+    const getWeatherIcon = (iconName) => {
+        let iconPath;
+    
+        switch (iconName) {
+            case '01d':
+                iconPath = require('../assets/openWeatherIcons/01d.png');
+                break;
+            case '01n':
+                iconPath = require('../assets/openWeatherIcons/01n.png');
+                break;
+            case '02d':
+                iconPath = require('../assets/openWeatherIcons/02d.png');
+                break;
+            case '02n':
+                iconPath = require('../assets/openWeatherIcons/02n.png');
+                break;
+            case '03d':
+                iconPath = require('../assets/openWeatherIcons/03d.png');
+                break;
+            case '03n':
+                iconPath = require('../assets/openWeatherIcons/03n.png');
+                break;
+            case '04d':
+                iconPath = require('../assets/openWeatherIcons/04d.png');
+                break;
+            case '04n':
+                iconPath = require('../assets/openWeatherIcons/04n.png');
+                break;
+            case '09d':
+                iconPath = require('../assets/openWeatherIcons/09d.png');
+                break;
+            case '09n':
+                iconPath = require('../assets/openWeatherIcons/09n.png');
+                break;
+            case '10d':
+                iconPath = require('../assets/openWeatherIcons/10d.png');
+                break;
+            case '10n':
+                iconPath = require('../assets/openWeatherIcons/10n.png');
+                break;
+            case '11d':
+                iconPath = require('../assets/openWeatherIcons/11d.png');
+                break;
+            case '11n':
+                iconPath = require('../assets/openWeatherIcons/11n.png');
+                break;
+            case '13d':
+                iconPath = require('../assets/openWeatherIcons/13d.png');
+                break;
+            case '13n':
+                iconPath = require('../assets/openWeatherIcons/13n.png');
+                break;
+            case '50d':
+                iconPath = require('../assets/openWeatherIcons/50d.png');
+                break;
+            case '50n':
+                iconPath = require('../assets/openWeatherIcons/50n.png');
+                break;
+            default:
+                iconPath = require('../assets/openWeatherIcons/01n.png');
+        }
+    
+        return iconPath;
+    };
+    
 
     return (
         <View style={{ flex: 1 }}>
@@ -217,13 +265,13 @@ const HomeScreen = ({ navigation }) => {
 
                     <View style={{ flexDirection: 'row', alignSelf: 'center', marginTop: -20 }}>
                         <Text style={STYLES.bigdegree}>{formattemp}{'\u02DA'} </Text>
-                        <Image style={STYLES.scatterimg} source={require('../assets/openWeatherIcons/09d.png')} />
+                       <Image style={STYLES.scatterimg} source={getWeatherIcon(data.weather[0].icon)} />
 
 
                     </View>
 
-                    <Text style={STYLES.scatterclouds}>{data?.weather[0]?.main}</Text>
-
+                    {/* <Text style={STYLES.scatterclouds}>{(data?.weather[0]?.main || 'HAZE').toUpperCase()}</Text> */}
+                <Text style={STYLES.scatterclouds}>HAZE</Text> 
                     <View style={{ ...STYLES.card, justifyContent: 'space-between', marginTop: 20, paddingHorizontal: 40, paddingVertical: 30 }}>
                         <View style={{ ...STYLES.column1 }}>
                             <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/img.png')} />
@@ -245,29 +293,29 @@ const HomeScreen = ({ navigation }) => {
                     </View>
 
                     <TouchableOpacity onPress={() => navigation.navigate('Today')}>
-                        <View style={{ ...STYLES.card, marginTop: 10, justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
-                            <View style={{ ...STYLES.column1, }}>
-                                <Text style={STYLES.temparature}>{selected[0]?.temp}{'\u2103'}</Text>
-                                <Text style={STYLES.scatter}>{selected[0]?.weather[0]?.description.toUpperCase()}</Text>
-                                <Image style={STYLES.img2} source={require('../assets/openWeatherIcons/03d.png')} />
-                                <Text style={STYLES.timetext}>{threehours[0]}</Text>
-                            </View>
+                <View style={{ ...STYLES.card, marginTop: 10, justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
+                    <View style={{ ...STYLES.column1, }}>
+                        <Text style={STYLES.temparature}>{selected[0]?.temp}{'\u2103'}</Text>
+                        <Text style={STYLES.scatter}>{selected[0]?.weather[0]?.description.toUpperCase()}</Text>
+                        <Image style={STYLES.img2} source={getWeatherIcon(selected[0]?.weather[0]?.icon)} />
+                        <Text style={STYLES.timetext}>{threehours[0]}</Text>
+                    </View>
 
-                            <View style={{ ...STYLES.column1 }}>
-                                <Text style={STYLES.temparature}>{selected[1]?.temp}{'\u2103'}</Text>
-                                <Text style={STYLES.scatter}>{selected[1]?.weather[0]?.description.toUpperCase()}</Text>
-                                <Image style={STYLES.img2} source={require('../assets/openWeatherIcons/03d.png')} />
-                                <Text style={STYLES.timetext}>{threehours[1]}</Text>
-                            </View>
+                    <View style={{ ...STYLES.column1 }}>
+                        <Text style={STYLES.temparature}>{selected[1]?.temp}{'\u2103'}</Text>
+                        <Text style={STYLES.scatter}>{selected[1]?.weather[0]?.description.toUpperCase()}</Text>
+                        <Image style={STYLES.img2} source={getWeatherIcon(selected[1]?.weather[0]?.icon)} />
+                        <Text style={STYLES.timetext}>{threehours[1]}</Text>
+                    </View>
 
-                            <View style={{ ...STYLES.column1, marginRight: 2 }}>
-                                <Text style={STYLES.temparature}>{selected[2]?.temp}{'\u2103'}</Text>
-                                <Text style={STYLES.scatter}>{selected[2]?.weather[0]?.description.toUpperCase()}</Text>
-                                <Image style={STYLES.img2} source={require('../assets/openWeatherIcons/04d.png')} />
-                                <Text style={STYLES.timetext}>{threehours[2]}</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
+                    <View style={{ ...STYLES.column1, marginRight: 2 }}>
+                        <Text style={STYLES.temparature}>{selected[2]?.temp}{'\u2103'}</Text>
+                        <Text style={STYLES.scatter}>{selected[2]?.weather[0]?.description.toUpperCase()}</Text>
+                        <Image style={STYLES.img2} source={getWeatherIcon(selected[2]?.weather[0]?.icon)} />
+                        <Text style={STYLES.timetext}>{threehours[2]}</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
                 </ScrollView>
             </ImageBackground>
         </View >
