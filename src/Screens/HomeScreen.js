@@ -30,7 +30,7 @@ const HomeScreen = ({ navigation }) => {
     };
     const findBackgroundImage = () => {
         const currentTime = moment();
-        const currentHour = formattedTime;
+        const currentHour = currentTime.hours();
 
         switch (true) {
             case (currentHour >= 6 && currentHour < 8):
@@ -48,108 +48,91 @@ const HomeScreen = ({ navigation }) => {
 
     const backgroundImage = findBackgroundImage();
 
+ 
+useEffect(() => {
+    const getLocationAndFetchData = async () => {
+        try {           
+            Geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    console.log("posiii",position)
+                    const api = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric`;
 
-    useEffect(() => {
-        const getLocationAndFetchData = async () => {
-            try {
-                Geolocation.getCurrentPosition(
-                    async (position) => {
+                    setloading(true);
+                    const response = await fetch(api);
+                    const json = await response.json();
 
-                        const { latitude, longitude } = position.coords;
-                        console.log("posiii", position)
-                        const api = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric`;
+                
+                    setdata(json);
+                    setloading(false);
+                    setFormattedTemperature(json?.main?.temp?.toFixed(1));
 
-                        setloading(true);
-                        const response = await fetch(api);
-                        const json = await response.json();
+                    const weatherIcon = data.weather[0].icon;
+                    const timezoneOffset = json?.timezone;
+                    const utcTime = moment.utc();
+                    const localTime = utcTime.utcOffset(timezoneOffset / 60);
+                    const formatted = localTime.format('MMMM Do YYYY, h:mm a');
+                    const formattedTime = localTime.format('h:mm a');
+                    setFormattedTime(formattedTime);
+                    setFormattedDate(formatted);
+                },
+                (error) => {
+                    console.error('Error getting location:', error);
+                    setloading(false);
+                },
+                { enableHighAccuracy: true, timeout: 30000 }
+            );
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setloading(false);
+        }
+    };
 
+   
+    getLocationAndFetchData();
+}, []); 
 
-                        setdata(json);
-                        setloading(false);
-                        setFormattedTemperature(json?.main?.temp?.toFixed(1));
-
-                        const weatherIcon = data.weather[0].icon;
-                        console.log("weathericon", weatherIcon)
-                        const timezoneOffset = json?.timezone;
-                        const utcTime = moment.utc();
-                        const localTime = utcTime.utcOffset(timezoneOffset / 60);
-                        const formatted = localTime.format('MMMM Do YYYY, h:mm a');
-                        const formattedTime = localTime.format('h:mm a');
-                        setFormattedTime(formattedTime);
-                        setFormattedDate(formatted);
-                    },
-                    (error) => {
-                        console.error('Error getting location:', error);
-                        setloading(false);
-                    },
-                    { enableHighAccuracy: true, timeout: 30000 }
-                );
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                setloading(false);
-            }
-        };
-
-
-        getLocationAndFetchData();
-    }, []);
-
-
+    
     useEffect(() => {
         const APIHour = () => {
-            try {
-                Geolocation.getCurrentPosition(
-                    async (position) => {
+            const apihour = 'https://api.openweathermap.org/data/2.5/onecall?lat=9.925201&lon=78.119774&exclude=minutely,daily&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric';
 
-                        const { latitude, longitude } = position.coords;
-                        console.log("posiii", position)
-                        const apihour = 'https://api.openweathermap.org/data/2.5/onecall?lat=9.925201&lon=78.119774&exclude=minutely,daily&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric';
+            setloading(true);
+            fetch(apihour)
+                .then((resp) => resp.json())
+                .then((json) => {
+                    setdatahour(json);
+                    setloading(false);
+                    sethourlist(json.hourly);
 
-                        setloading(true);
-                        fetch(apihour)
-                            .then((resp) => resp.json())
-                            .then((json) => {
-                                setdatahour(json);
-                                setloading(false);
-                                sethourlist(json.hourly);
+                    const selectedhours = json.hourly.slice(0, 3);
+                    setselected(selectedhours);
 
-                                const selectedhours = json.hourly.slice(0, 3);
-                                setselected(selectedhours);
-
-                                const threehours = [];
-                                for (let i = 0; i < selectedhours.length; i++) {
-                                    const dt = selectedhours[i]?.dt;
-                                    if (dt) {
-                                        const timezoneOffset = dt;
-                                        const utcTime = moment.utc();
-                                        const localTime = utcTime.utcOffset(timezoneOffset / 60);
-                                        const newset = localTime.format('h:mm a');
-                                        threehours.push(newset);
-                                    }
-                                }
-                                setthree(threehours);
-                                console.log(threehours)
-
-                            })
-                        setFormattedDate(formatted);
-                    },
-                    (error) => {
-                        console.error('Error getting location:', error);
-                        setloading(false);
-                    },
-
-                    { enableHighAccuracy: true, timeout: 30000 }
-                );
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                setloading(false);
-            }
-            console.log("data", data)
+                    const threehours = [];
+                    for (let i = 0; i < selectedhours.length; i++) {
+                        const dt = selectedhours[i]?.dt;
+                        if (dt) {
+                            const timezoneOffset = dt;
+                            const utcTime = moment.utc();
+                            const localTime = utcTime.utcOffset(timezoneOffset / 60);
+                            const newset = localTime.format('h:mm a');
+                            threehours.push(newset);
+                        }
+                    }
+                    setthree(threehours);
+                    console.log(threehours)
+                    
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setloading(false);
+                });
+                console.log("data",data)
         };
 
         APIHour();
     }, []);
-
+   
     // const locationr = () => {
     //     GetLocation.getCurrentPosition({
     //         enableHighAccuracy: true,
@@ -184,7 +167,7 @@ const HomeScreen = ({ navigation }) => {
 
     const getWeatherIcon = (iconName) => {
         let iconPath;
-
+    
         switch (iconName) {
             case '01d':
                 iconPath = require('../assets/openWeatherIcons/01d.png');
@@ -243,10 +226,10 @@ const HomeScreen = ({ navigation }) => {
             default:
                 iconPath = require('../assets/openWeatherIcons/01n.png');
         }
-
+    
         return iconPath;
     };
-
+    
 
     return (
         <View style={{ flex: 1 }}>
@@ -282,13 +265,13 @@ const HomeScreen = ({ navigation }) => {
 
                     <View style={{ flexDirection: 'row', alignSelf: 'center', marginTop: -20 }}>
                         <Text style={STYLES.bigdegree}>{formattemp}{'\u02DA'} </Text>
-                        <Image style={STYLES.scatterimg} source={getWeatherIcon(data.weather[0].icon)} />
-
+                    <Image style={STYLES.scatterimg} source={getWeatherIcon(data?.weather[0]?.icon)} />
+                    {/* <Image style={STYLES.scatterimg} source={data?.weather[0]?.icon ? getWeatherIcon(data.weather[0].icon) : require('../assets/openWeatherIcons/defaultIcon.png')} /> */}
 
                     </View>
 
                     <Text style={STYLES.scatterclouds}>{(data?.weather[0]?.main || 'HAZE').toUpperCase()}</Text>
-                    {/* <Text style={STYLES.scatterclouds}>HAZE</Text> */}
+                {/* <Text style={STYLES.scatterclouds}>HAZE</Text>  */}
                     <View style={{ ...STYLES.card, justifyContent: 'space-between', marginTop: 20, paddingHorizontal: 40, paddingVertical: 30 }}>
                         <View style={{ ...STYLES.column1 }}>
                             <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/img.png')} />
@@ -310,29 +293,29 @@ const HomeScreen = ({ navigation }) => {
                     </View>
 
                     <TouchableOpacity onPress={() => navigation.navigate('Today')}>
-                        <View style={{ ...STYLES.card, marginTop: 10, justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
-                            <View style={{ ...STYLES.column1, }}>
-                                <Text style={STYLES.temparature}>{selected[0]?.temp}{'\u2103'}</Text>
-                                <Text style={STYLES.scatter}>{selected[0]?.weather[0]?.description.toUpperCase()}</Text>
-                                <Image style={STYLES.img2} source={getWeatherIcon(selected[0]?.weather[0]?.icon)} />
-                                <Text style={STYLES.timetext}>{threehours[0]}</Text>
-                            </View>
+                <View style={{ ...STYLES.card, marginTop: 10, justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
+                    <View style={{ ...STYLES.column1, }}>
+                        <Text style={STYLES.temparature}>{selected[0]?.temp}{'\u2103'}</Text>
+                        <Text style={STYLES.scatter}>{selected[0]?.weather[0]?.description.toUpperCase()}</Text>
+                        <Image style={STYLES.img2} source={getWeatherIcon(selected[0]?.weather[0]?.icon)} />
+                        <Text style={STYLES.timetext}>{threehours[0]}</Text>
+                    </View>
 
-                            <View style={{ ...STYLES.column1 }}>
-                                <Text style={STYLES.temparature}>{selected[1]?.temp}{'\u2103'}</Text>
-                                <Text style={STYLES.scatter}>{selected[1]?.weather[0]?.description.toUpperCase()}</Text>
-                                <Image style={STYLES.img2} source={getWeatherIcon(selected[1]?.weather[0]?.icon)} />
-                                <Text style={STYLES.timetext}>{threehours[1]}</Text>
-                            </View>
+                    <View style={{ ...STYLES.column1 }}>
+                        <Text style={STYLES.temparature}>{selected[1]?.temp}{'\u2103'}</Text>
+                        <Text style={STYLES.scatter}>{selected[1]?.weather[0]?.description.toUpperCase()}</Text>
+                        <Image style={STYLES.img2} source={getWeatherIcon(selected[1]?.weather[0]?.icon)} />
+                        <Text style={STYLES.timetext}>{threehours[1]}</Text>
+                    </View>
 
-                            <View style={{ ...STYLES.column1, marginRight: 2 }}>
-                                <Text style={STYLES.temparature}>{selected[2]?.temp}{'\u2103'}</Text>
-                                <Text style={STYLES.scatter}>{selected[2]?.weather[0]?.description.toUpperCase()}</Text>
-                                <Image style={STYLES.img2} source={getWeatherIcon(selected[2]?.weather[0]?.icon)} />
-                                <Text style={STYLES.timetext}>{threehours[2]}</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
+                    <View style={{ ...STYLES.column1, marginRight: 2 }}>
+                        <Text style={STYLES.temparature}>{selected[2]?.temp}{'\u2103'}</Text>
+                        <Text style={STYLES.scatter}>{selected[2]?.weather[0]?.description.toUpperCase()}</Text>
+                        <Image style={STYLES.img2} source={getWeatherIcon(selected[2]?.weather[0]?.icon)} />
+                        <Text style={STYLES.timetext}>{threehours[2]}</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
                 </ScrollView>
             </ImageBackground>
         </View >
@@ -376,8 +359,7 @@ const STYLES = StyleSheet.create({
     img2: {
 
         height: 51,
-        width: 55
-        ,
+        width: 55,
         marginBottom: 7
     },
     temparature: {

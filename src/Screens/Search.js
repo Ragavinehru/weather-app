@@ -1,14 +1,16 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ImageBackground,KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import moment from 'moment';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; 
+
 
 const Search = ({ navigation }) => {
     const [searchText, setSearchText] = useState('');
     const [formattedDate, setFormattedDate] = useState('');
     const [formattedTime, setFormattedTime] = useState('');
     const [HourTime, setHourTime] = useState('');
-    const [loading, setloading] = useState(true);
+    const [loading, setloading] = useState('');
     const [formattemp, setFormattedTemperature] = useState('')
     const [city, setcity] = useState('');
     const [data, setdata] = useState('');
@@ -22,9 +24,9 @@ const Search = ({ navigation }) => {
 
 
     const clearSearch = () => {
-        setSearchText('');
+        setsearch('');
     };
-
+    
 
 
     const APIHour = async () => {
@@ -47,14 +49,14 @@ const Search = ({ navigation }) => {
 
                 const api = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=3a9bee9c35ea0fc21779ccf795b8f5e6&units=metric`;
 
-                setloading(true);
+               
                 const weatherResponse = await fetch(api);
                 const weatherJson = await weatherResponse.json();
 
                 setdata(weatherJson);
                 setloading(false);
                 setFormattedTemperature(weatherJson.main.temp);
-
+                console.log("tempuuuuu:", weatherJson)
                 console.log("Weather data", weatherJson);
                 const timezoneOffset = json?.timezone;
                 const utcTime = moment.utc();
@@ -63,10 +65,12 @@ const Search = ({ navigation }) => {
                 const formattedTime = localTime.format('h:mm a');
                 setFormattedTime(formattedTime);
                 setFormattedDate(formatted);
-                console.log("temp:", formattemp)
+                console.log("temp:", formattemp);
+                setloading(false);
 
             } else {
                 console.log("No results found");
+                setloading(false);
             }
         } catch (error) {
             console.error(error);
@@ -142,6 +146,10 @@ const Search = ({ navigation }) => {
 
 
     return (
+        <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
+      >
         <View style={{ flex: 1, }} >
             <ImageBackground style={{
                 width: '100%',
@@ -155,18 +163,19 @@ const Search = ({ navigation }) => {
                     <Text style={STYLES.appbartext}>Search City</Text>
                 </View>
 
-                <ScrollView>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 24 }}>
+                <ScrollView style={{flex:1}}>
+                    <View style={{ flexDirection: 'row',flex:1, justifyContent: 'space-between', marginHorizontal: 24 }}>
                         <View style={STYLES.searchhome}>
                             <Image style={{ height: 20, width: 20, marginLeft: 15 }} source={require('../assets/openWeatherIcons/greypin.png')} />
                             <TextInput
-                                style={{ height: 70, flex: 1, fontSize: 18, color: 'black', marginLeft: 10, }}
+                                style={{ height: 70, flex: 1, fontSize: 18, color: 'black', marginLeft: 10 }}
                                 placeholder="City Name"
                                 placeholderTextColor={'grey'}
                                 value={searchCity}
                                 onChangeText={(text) => setsearch(text)}
                             />
-                            {searchText.length > 0 && (
+
+                            {searchCity.length > 0 && (
                                 <TouchableOpacity onPress={clearSearch}>
                                     <Image style={{ width: 20, height: 20, marginRight: 10 }} source={require('../assets/openWeatherIcons/cross.png')} />
                                 </TouchableOpacity>
@@ -179,13 +188,17 @@ const Search = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
-                <View style={{ ...STYLES.card, backgroundColor: '#5A5', height: '50%' }}>
+
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />
+    ) : (
+        searchCity && data && (
+                <View style={{ ...STYLES.card,  position:'absolute', backgroundColor: '#5A5', height: '70%',marginTop:'56%' }}>
                     {/* <ImageBackground style={STYLES.background} source={require('../assets/BGImages/1.jpg')} resizeMode='stretch'> */}
 
-
-                    <View>
+                    <View style={{flex:1}}>
                         <View style={{ flexDirection: 'row', textAlign: 'center', alignSelf: 'center', marginTop: 20 }}>
-                            <Image style={{ height: 30, width: 30, }} source={require('../assets/openWeatherIcons/pin.png')} />
+                            <Image style={{ height: 30, width: 30,marginTop:50 }} source={require('../assets/openWeatherIcons/pin.png')} />
                             <Text style={STYLES.galle}>{data.name}</Text>
                         </View>
                         <Text style={STYLES.daytime}>{formattedDate}</Text>
@@ -199,7 +212,8 @@ const Search = ({ navigation }) => {
 
                         {/* <Text style={STYLES.scatterclouds}>{(data?.weather[0]?.main || 'HAZE').toUpperCase()}</Text> */}
                         {/* <Text style={STYLES.scatterclouds}>HAZE</Text> */}
-                        <View style={{ ...STYLES.card, backgroundColor: 'white', justifyContent: 'space-between', marginTop: 20, paddingHorizontal: 40, paddingVertical: 30 }}>
+                      
+                        <View style={{ ...STYLES.card, backgroundColor: 'white', justifyContent: 'space-between', paddingHorizontal: 40, paddingVertical: 30,marginTop:20 }}>
                             <View style={{ ...STYLES.column1 }}>
                                 <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/img.png')} />
                                 <Text style={STYLES.weather}>Max Temp</Text>
@@ -216,6 +230,25 @@ const Search = ({ navigation }) => {
                                 <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/wind.png')} />
                                 <Text style={STYLES.weather}>Wind</Text>
                                 <Text style={STYLES.degree}>{data?.wind?.speed}m/s</Text>
+                            </View>
+                        </View>
+                        <View style={{ ...STYLES.card, backgroundColor: 'white', justifyContent: 'space-between', paddingHorizontal: 40, paddingVertical: 30,marginTop:20 }}>
+                            <View style={{ ...STYLES.column1 }}>
+                                <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/img.png')} />
+                                <Text style={STYLES.weather}>Temp low</Text>
+                                <Text style={STYLES.degree}>{data?.main?.temp_min}</Text>
+                            </View>
+
+                            <View style={{ ...STYLES.column1 }}>
+                                <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/humidity.png')} />
+                                <Text style={STYLES.weather}>Weather</Text>
+                                <Text style={STYLES.degree}>{data?.weather[0]?.description}</Text>
+                            </View>
+
+                            <View style={{ ...STYLES.column1 }}>
+                                <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/wind.png')} />
+                                <Text style={STYLES.weather}>Pressure</Text>
+                                <Text style={STYLES.degree}>{data?.main?.pressure}</Text>
                             </View>
                         </View>
 
@@ -246,31 +279,30 @@ const Search = ({ navigation }) => {
                     </View>
                     {/* </ImageBackground> */}
                 </View>
-
+ )
+ )}
 
             </ImageBackground>
         </View >
-    );
-};
-
+        </KeyboardAvoidingView>
+);
+                        };
 export default Search;
 
 const STYLES = StyleSheet.create({
     card: {
         flexDirection: 'row',
-
         borderRadius: 10,
         width: '89%',
         elevation: 4,
         borderRadius: 35,
         shadowColor: 'black',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.2,
-        marginTop: 20,
-        justifyContent: 'center',
+        shadowOffset: { width: 0, height: 9 },
+        shadowOpacity: 0.2,               
         alignSelf: 'center',
-
-    },
+        alignItems:'center',
+      
+        },
 
     scatterclouds: {
         color: 'white',
@@ -289,6 +321,7 @@ const STYLES = StyleSheet.create({
         marginRight: 20,
     },
     daytime: { fontSize: 17, color: 'white', alignSelf: 'center', marginTop: 10 },
+  
     degree: {
         color: 'black',
         fontSize: 16,
@@ -311,8 +344,9 @@ const STYLES = StyleSheet.create({
 
         // paddingHorizontal: 20
     },
-    appbar: { flexDirection: 'row', alignItems: 'center', marginBottom: 28, paddingTop: 50, paddingHorizontal: 16 },
+    appbar: { flexDirection: 'row',  alignItems: 'center', marginBottom: 28, paddingTop: 50, paddingHorizontal: 16 },
     appbarimg: {
+      
         width: 50,
         marginLeft: 20,
         height: 50,
@@ -320,10 +354,9 @@ const STYLES = StyleSheet.create({
         justifyContent: 'center'
     },
     appbartext: { color: 'white', fontSize: 27, fontWeight: '500', marginLeft: 17 },
-    galle: { color: 'white', fontSize: 25, fontWeight: "600", marginLeft: 12 },
+    galle: { color: 'white',marginTop:50, fontSize: 25, fontWeight: "600", marginLeft: 12 },
     scatterimg: {
-        height: 90, width: 140,
-    },
+        height: 80, width: 80,},
     bigdegree: { fontSize: 59, color: 'white', },
     timetext: {
         color: '#A1A1A1', fontWeight: 'bold', fontSize: 16
@@ -339,12 +372,10 @@ const STYLES = StyleSheet.create({
     column1: {
         alignItems: 'center',
         justifyContent: 'center'
-
     },
     img2: {
-
-        height: 51,
-        width: 65,
+        height: 41,
+        width: 55,
         marginBottom: 7
     },
     temparature: {

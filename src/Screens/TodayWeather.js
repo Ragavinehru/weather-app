@@ -164,21 +164,21 @@ const TodayWeather = ({ navigation }) => {
                     <View style={{ alignItems: 'center' }}>
                         <Text style={{ color: 'black', fontSize: 16 }}>{selected[0]?.temp}{'\u2103'}</Text>
                         <Text style={{ fontSize: 10, width: 100, marginBottom: 20, fontWeight: 'bold' }}>{selected[0]?.weather[0]?.description.toUpperCase()}</Text>
-                        <Image style={{ height: 41, width: 52, marginBottom: 7 }} source={getWeatherIcon(selected[0]?.weather[0]?.icon)} />
+                        <Image style={{ height: 50, width: 50, marginBottom: 7 }} source={getWeatherIcon(selected[0]?.weather[0]?.icon)} />
                         <Text style={{}}>{threehours[0]}</Text>
                     </View>
 
                     <View style={{ alignItems: 'center' }}>
                         <Text style={{ color: 'black', fontSize: 16, }}>{selected[1]?.temp} {'\u2103'}</Text>
                         <Text style={{ fontSize: 10, width: 100, marginBottom: 20, fontWeight: 'bold' }}>{selected[1]?.weather[0]?.description.toUpperCase()}</Text>
-                        <Image style={{ height: 41, width: 52, marginBottom: 7 }} source={getWeatherIcon(selected[1]?.weather[0]?.icon)} />
+                        <Image style={{ height: 50, width: 50, marginBottom: 7 }} source={getWeatherIcon(selected[1]?.weather[0]?.icon)} />
                         <Text style={{}}>{threehours[1]}</Text>
                     </View>
 
                     <View style={{ alignItems: 'center' }}>
                         <Text style={{ color: 'black', fontSize: 16, }}>{selected[2]?.temp}{'\u2103'}</Text>
                         <Text style={{ fontSize: 10, width: 100, marginBottom: 20, fontWeight: 'bold' }}>{selected[2]?.weather[0]?.description.toUpperCase()}</Text>
-                        <Image style={{ height: 41, width: 52, marginBottom: 7 }} source={getWeatherIcon(selected[2]?.weather[0]?.icon)} />
+                        <Image style={{ height: 50, width: 50, marginBottom: 7 }} source={getWeatherIcon(selected[2]?.weather[0]?.icon)} />
                         <Text>{threehours[2]}</Text>
                     </View>
                 </View>
