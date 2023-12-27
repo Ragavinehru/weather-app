@@ -26,26 +26,28 @@ const TodayWeather = ({ navigation }) => {
                     setdatahour(json);
                     setloading(false);
                     sethourlist(json.hourly);
-
+console.log("today weather",datahour)
                     const selectedhours = json.hourly.slice(0, 3);
                     setselected(selectedhours);
                     const sunrise = json.current.sunrise;
                     const sunset = json.current.sunset;
 
-                    const timezoneOffset = sunrise;
-                    const utcTime = moment.utc();
-                    const localTime = utcTime.utcOffset(timezoneOffset / 60);
-                    const rise = localTime.format('h:mm a'); setrise(rise)
+                    // const timezoneOffset = sunrise;
+                    // const utcTime = moment.utc();
+                    // const localTime = utcTime.utcOffset(timezoneOffset / 60);
+                    // const rise = localTime.format('h:mm a'); setrise(rise)
+                    const sunriseTime = moment.unix(sunrise);
+                    const rise = sunriseTime.format('h:mm a');
+                    setrise(rise);
 
-
-                    const timezoneset = sunset;
-                    const utc = moment.utc();
-                    const local = utc.utcOffset(timezoneset / 60);
-                    const set = local.format('h:mm a'); setset(set)
-
+                    const sunsetTime = moment.unix(sunset);
+                    const set = sunsetTime.format('h:mm a');
+                    setset(set);
+console.log("sunrise sunset",rise,set)
 
 
                     const threehours = [];
+
                     for (let i = 0; i < selectedhours.length; i++) {
                         const dt = selectedhours[i]?.dt;
                         if (dt) {
@@ -164,21 +166,21 @@ const TodayWeather = ({ navigation }) => {
                     <View style={{ alignItems: 'center' }}>
                         <Text style={{ color: 'black', fontSize: 16 }}>{selected[0]?.temp}{'\u2103'}</Text>
                         <Text style={{ fontSize: 10, width: 100, marginBottom: 20, fontWeight: 'bold' }}>{selected[0]?.weather[0]?.description.toUpperCase()}</Text>
-                        <Image style={{ height: 50, width: 50, marginBottom: 7 }} source={getWeatherIcon(selected[0]?.weather[0]?.icon)} />
+                        <Image style={{ height: 55, width: 64, marginBottom: 7 }} source={getWeatherIcon(selected[0]?.weather[0]?.icon)} />
                         <Text style={{}}>{threehours[0]}</Text>
                     </View>
 
                     <View style={{ alignItems: 'center' }}>
                         <Text style={{ color: 'black', fontSize: 16, }}>{selected[1]?.temp} {'\u2103'}</Text>
                         <Text style={{ fontSize: 10, width: 100, marginBottom: 20, fontWeight: 'bold' }}>{selected[1]?.weather[0]?.description.toUpperCase()}</Text>
-                        <Image style={{ height: 50, width: 50, marginBottom: 7 }} source={getWeatherIcon(selected[1]?.weather[0]?.icon)} />
+                        <Image style={{ height: 55, width: 64, marginBottom: 7 }} source={getWeatherIcon(selected[1]?.weather[0]?.icon)} />
                         <Text style={{}}>{threehours[1]}</Text>
                     </View>
 
                     <View style={{ alignItems: 'center' }}>
                         <Text style={{ color: 'black', fontSize: 16, }}>{selected[2]?.temp}{'\u2103'}</Text>
                         <Text style={{ fontSize: 10, width: 100, marginBottom: 20, fontWeight: 'bold' }}>{selected[2]?.weather[0]?.description.toUpperCase()}</Text>
-                        <Image style={{ height: 50, width: 50, marginBottom: 7 }} source={getWeatherIcon(selected[2]?.weather[0]?.icon)} />
+                        <Image style={{ height: 55, width: 64, marginBottom: 7 }} source={getWeatherIcon(selected[2]?.weather[0]?.icon)} />
                         <Text>{threehours[2]}</Text>
                     </View>
                 </View>

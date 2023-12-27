@@ -38,7 +38,9 @@ const CustomDrawerContent = (props) => {
                 }}
             >
                 <Image style={styles.drawerItemImage} source={require('../assets/openWeatherIcons/star1.png')} />
-                <Text style={styles.drawerItemText}>Saved Locations</Text>
+                <Text onPress={() => {
+                    props.navigation.navigate('Save');
+                }} style={styles.drawerItemText}>Saved Locations</Text>
             </TouchableOpacity>
         </DrawerContentScrollView>
 

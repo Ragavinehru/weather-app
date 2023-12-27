@@ -1,11 +1,13 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, ImageBackground,KeyboardAvoidingView, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ImageBackground,KeyboardAvoidingView, ActivityIndicator, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import moment from 'moment';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; 
+import { useLocation } from './LocationContext';
 
 
 const Search = ({ navigation }) => {
+    const { addLocation } = useLocation();
     const [searchText, setSearchText] = useState('');
     const [formattedDate, setFormattedDate] = useState('');
     const [formattedTime, setFormattedTime] = useState('');
@@ -143,7 +145,23 @@ const Search = ({ navigation }) => {
 
         return iconPath;
     };
+    const [savedLocations, setSavedLocations] = useState([]);
 
+    const handleSave = () => {
+        if (data) {
+          const savedLocation = {
+            name: data.name,
+            lat: data.coord.lat,
+            lon: data.coord.lon,
+          };
+          addLocation(savedLocation);
+          setSavedLocations([...savedLocations, savedLocation]);
+       Alert.alert("Saved location")
+          //   navigation.navigate('SavedLocations', { savedLocations, navigation });
+        }
+      };
+      
+  console.log("saved",savedLocations)
 
     return (
         <KeyboardAvoidingView
@@ -195,8 +213,10 @@ const Search = ({ navigation }) => {
         searchCity && data && (
                 <View style={{ ...STYLES.card,  position:'absolute', backgroundColor: '#5A5', height: '70%',marginTop:'56%' }}>
                     {/* <ImageBackground style={STYLES.background} source={require('../assets/BGImages/1.jpg')} resizeMode='stretch'> */}
-
+                       
                     <View style={{flex:1}}>
+                  
+        
                         <View style={{ flexDirection: 'row', textAlign: 'center', alignSelf: 'center', marginTop: 20 }}>
                             <Image style={{ height: 30, width: 30,marginTop:50 }} source={require('../assets/openWeatherIcons/pin.png')} />
                             <Text style={STYLES.galle}>{data.name}</Text>
@@ -232,7 +252,12 @@ const Search = ({ navigation }) => {
                                 <Text style={STYLES.degree}>{data?.wind?.speed}m/s</Text>
                             </View>
                         </View>
-                        <View style={{ ...STYLES.card, backgroundColor: 'white', justifyContent: 'space-between', paddingHorizontal: 40, paddingVertical: 30,marginTop:20 }}>
+                        <TouchableOpacity onPress={handleSave}>
+                <View style={{ ...STYLES.card, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', padding: 17, marginTop: 20 }}>
+                  <Text style={{ color: 'black', fontSize: 17 }}>Save Location</Text>
+                </View>
+              </TouchableOpacity>
+                        {/* <View style={{ ...STYLES.card, backgroundColor: 'white', justifyContent: 'space-between', paddingHorizontal: 40, paddingVertical: 30,marginTop:20 }}>
                             <View style={{ ...STYLES.column1 }}>
                                 <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/img.png')} />
                                 <Text style={STYLES.weather}>Temp low</Text>
@@ -250,7 +275,7 @@ const Search = ({ navigation }) => {
                                 <Text style={STYLES.weather}>Pressure</Text>
                                 <Text style={STYLES.degree}>{data?.main?.pressure}</Text>
                             </View>
-                        </View>
+                        </View> */}
 
                         {/* <TouchableOpacity onPress={() => navigation.navigate('Today')}>
                                 <View style={{ ...STYLES.card, marginTop: 10, justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
@@ -356,7 +381,7 @@ const STYLES = StyleSheet.create({
     appbartext: { color: 'white', fontSize: 27, fontWeight: '500', marginLeft: 17 },
     galle: { color: 'white',marginTop:50, fontSize: 25, fontWeight: "600", marginLeft: 12 },
     scatterimg: {
-        height: 80, width: 80,},
+        height: 80, width: 120,},
     bigdegree: { fontSize: 59, color: 'white', },
     timetext: {
         color: '#A1A1A1', fontWeight: 'bold', fontSize: 16

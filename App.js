@@ -11,7 +11,9 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import Dailyweather from './src/Screens/Dailyweather';
 import TodayWeather from './src/Screens/TodayWeather';
 import CustomDrawerContent from './src/Screens/CustomDrawerContent';
-
+import Saved from './src/Screens/Saved';
+// import LocationContext from 
+import { LocationProvider } from './src/Screens/LocationContext';
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigation = () => {
@@ -52,6 +54,7 @@ const Stack = createStackNavigator();
 
 function App() {
   return (
+    <LocationProvider>
     <NavigationContainer>
       <Stack.Navigator initialRouteName={Splash} screenOptions={{ header: () => null }}>
         <Stack.Screen name="Splash" component={Splash} />
@@ -59,8 +62,10 @@ function App() {
         <Stack.Screen name="search" component={Search} />
         <Stack.Screen name="Daily" component={Dailyweather} />
         <Stack.Screen name="Today" component={TodayWeather} />
+        <Stack.Screen name="Save" component={Saved} />
       </Stack.Navigator>
     </NavigationContainer>
+    </LocationProvider>
   );
 }
 export default App;

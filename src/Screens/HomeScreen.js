@@ -30,7 +30,7 @@ const HomeScreen = ({ navigation }) => {
     };
     const findBackgroundImage = () => {
         const currentTime = moment();
-        const currentHour = currentTime.hours();
+        const currentHour = formattedTime;
 
         switch (true) {
             case (currentHour >= 6 && currentHour < 8):
@@ -276,19 +276,19 @@ useEffect(() => {
                         <View style={{ ...STYLES.column1 }}>
                             <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/img.png')} />
                             <Text style={STYLES.weather}>Max Temp</Text>
-                            <Text style={STYLES.degree}>{data.main.temp}{'\u2103'}</Text>
+                            <Text style={STYLES.degree}>{data?.main?.temp}{'\u2103'}</Text>
                         </View>
 
                         <View style={{ ...STYLES.column1 }}>
                             <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/humidity.png')} />
                             <Text style={STYLES.weather}>Humidity</Text>
-                            <Text style={STYLES.degree}>{data.main.humidity}%</Text>
+                            <Text style={STYLES.degree}>{data?.main?.humidity}%</Text>
                         </View>
 
                         <View style={{ ...STYLES.column1 }}>
                             <Image style={STYLES.img1} source={require('../assets/openWeatherIcons/wind.png')} />
                             <Text style={STYLES.weather}>Wind</Text>
-                            <Text style={STYLES.degree}>{data.wind.speed}m/s</Text>
+                            <Text style={STYLES.degree}>{data?.wind?.speed}m/s</Text>
                         </View>
                     </View>
 
@@ -386,9 +386,9 @@ const STYLES = StyleSheet.create({
         marginTop: -25
     },
     scatterimg: {
-        height: 70, width: 90, marginTop: 80, marginLeft: -59
+        height: 90, width: 90, marginTop: 80, marginLeft: -59
     },
-    bigdegree: { fontSize: 130, color: 'white', marginLeft: 30 },
+    bigdegree: { fontSize: 120, color: 'white', marginLeft: 30 },
     daytime: { fontSize: 17, color: 'white', alignSelf: 'center', },
     galle: { color: 'white', fontSize: 25, fontWeight: "600", marginLeft: 12 },
     background: {

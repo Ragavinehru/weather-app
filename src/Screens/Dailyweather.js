@@ -239,6 +239,7 @@ const DailyWeather = ({ navigation }) => {
 
                 <View style={{ alignItems: "center", }}>
                     <View style={{ flexDirection: 'row', alignItems: "center", }}>
+
                         <Text style={{
                             color: '#5A5A5A',
                             fontWeight: '500', fontSize: 15
@@ -300,8 +301,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 9,
         borderRadius: 8,
-        padding: 10,
-        marginHorizontal: 45,
+        padding: 11,
+        // marginLeft:-15,
+        marginHorizontal: 25,
     },
     image: {
         width: 30,
@@ -313,8 +315,8 @@ const styles = StyleSheet.create({
         height: 16,
     },
     img: {
-        width: 37,
-        height: 37
+        width: 45,
+        height: 35
     },
     text: {
         color: '#5A5A5A',
